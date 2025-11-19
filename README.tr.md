@@ -375,6 +375,28 @@ soulingo_backend/
 └── soulingo-backend.postman_collection.json  # API testleri
 ```
 
+## 🗃️ Veritabanı Şeması (ER Diyagramı)
+
+Uygulama, aşağıdaki varlık-ilişki yapısına sahip ilişkisel bir veritabanı kullanır:
+
+![ER Diyagramı](add-ons/699c4151.jpg)
+
+### Veritabanı Varlıkları
+
+- **Users (Kullanıcılar)**: Uygulama kullanıcıları (öğrenciler ve adminler)
+- **Courses (Kurslar)**: Dil öğrenme kursları
+- **Lessons (Dersler)**: Kurslar içindeki bireysel dersler
+- **Enrollments (Kayıtlar)**: İlerleme takibi ile kullanıcı kurs kayıtları
+- **SessionAnalyses (Oturum Analizleri)**: Yapay zeka destekli konuşma oturumu analiz sonuçları
+
+### Ana İlişkiler
+
+- User'ın birçok Enrollment'ı vardır (1:N)
+- Course'un birçok Enrollment'ı vardır (1:N)
+- Course'un birçok Lesson'ı vardır (1:N)
+- User'ın birçok SessionAnalysis'i vardır (1:N)
+- Lesson'ın birçok SessionAnalysis'i vardır (1:N)
+
 ## 👨‍💻 Geliştirme
 
 ### Testleri Çalıştırma

@@ -370,6 +370,28 @@ soulingo_backend/
 └── soulingo-backend.postman_collection.json  # API tests
 ```
 
+## 🗃️ Database Schema (ER Diagram)
+
+The application uses a relational database with the following entity-relationship structure:
+
+![ER Diagram](add-ons/699c4151.jpg)
+
+### Database Entities
+
+- **Users**: Application users (students and admins)
+- **Courses**: Language learning courses
+- **Lessons**: Individual lessons within courses
+- **Enrollments**: User course enrollments with progress tracking
+- **SessionAnalyses**: AI-powered speaking session analysis results
+
+### Key Relationships
+
+- User has many Enrollments (1:N)
+- Course has many Enrollments (1:N)
+- Course has many Lessons (1:N)
+- User has many SessionAnalyses (1:N)
+- Lesson has many SessionAnalyses (1:N)
+
 ## 👨‍💻 Development
 
 ### Running Tests
