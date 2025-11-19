@@ -1,0 +1,2192 @@
+{
+  "info": {
+    "name": "Soulingo Backend API",
+    "description": "Complete Postman Collection for Soulingo Backend API - Language Learning Platform\n\nThis collection includes:\n- User authentication and authorization\n- Course and lesson management\n- Enrollment management\n- Session analysis and scoring\n\nAll endpoints are versioned under `/v1`.\n\n**Getting Started:**\n1. Register a new user or login with existing credentials\n2. The auth token will be automatically saved to collection variables\n3. All authenticated requests will use this token automatically\n4. IDs from created resources are automatically saved for easy testing\n\n**Base URL:** http://localhost:3000 (configurable via collection variables)\n\n**Authentication:** Bearer token (JWT) - automatically handled after login/register",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "soulingo-backend"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Base URL for the API (change to production URL when needed)"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT authentication token (automatically set after login/register)"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "Current user ID (automatically set after login/register)"
+    },
+    {
+      "key": "course_id",
+      "value": "",
+      "type": "string",
+      "description": "Last created/accessed course ID"
+    },
+    {
+      "key": "lesson_id",
+      "value": "",
+      "type": "string",
+      "description": "Last created/accessed lesson ID"
+    },
+    {
+      "key": "enrollment_id",
+      "value": "",
+      "type": "string",
+      "description": "Last created enrollment ID"
+    },
+    {
+      "key": "session_analysis_id",
+      "value": "",
+      "type": "string",
+      "description": "Last created session analysis ID"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints for user registration, login, and profile management. These endpoints do not require authentication except for 'Get Current User'.",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"email\": \"admin-test-{{$timestamp}}@soulingo.com\",\n    \"password\": \"admin123456\",\n    \"name\": \"Test Admin User\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "description": "Creates a new user account and returns authentication token.\n\n**Request Body:**\n- `email` (required): User's email address\n- `password` (required): Password (minimum 8 characters)\n- `name` (required): User's full name\n\n**Success Response (201):**\nReturns user data and JWT token\n\n**Error Response (422):**\nValidation errors (e.g., email already exists, invalid format)"
+          },
+          "response": [
+            {
+              "name": "Success - User Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user\": {\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"name\": \"John Doe\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/auth/register",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "auth", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"user\",\n    \"attributes\": {\n      \"id\": 1,\n      \"email\": \"user@example.com\",\n      \"name\": \"John Doe\",\n      \"role\": \"student\",\n      \"avatar_url\": null\n    }\n  },\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDk4NTYwMDB9.example_token\"\n}"
+            },
+            {
+              "name": "Error - Validation Failed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user\": {\n    \"email\": \"invalid-email\",\n    \"password\": \"123\",\n    \"name\": \"\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/auth/register",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "auth", "register"]
+                }
+              },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": {\n    \"code\": \"validation_error\",\n    \"message\": \"Validation failed\",\n    \"details\": {\n      \"email\": [\"is invalid\"],\n      \"password\": [\"is too short (minimum is 8 characters)\"],\n      \"name\": [\"can't be blank\"]\n    }\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful registration",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    // Save auth token to collection variable",
+                  "    pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "    ",
+                  "    // Save user ID to collection variable",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.id);",
+                  "    ",
+                  "    // Verify response structure",
+                  "    pm.test('Response has valid token', function() {",
+                  "        pm.expect(jsonData).to.have.property('token');",
+                  "        pm.expect(jsonData.token).to.be.a('string');",
+                  "        pm.expect(jsonData.token.length).to.be.above(20);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response has complete user data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'user');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('email');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('name');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('role');",
+                  "    });",
+                  "    ",
+                  "    pm.test('User role is valid', function() {",
+                  "        pm.expect(['student', 'admin']).to.include(jsonData.data.attributes.role);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Email format is valid', function() {",
+                  "        var email = jsonData.data.attributes.email;",
+                  "        pm.expect(email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response does not contain password', function() {",
+                  "        pm.expect(jsonData.data.attributes).to.not.have.property('password');",
+                  "        pm.expect(jsonData.data.attributes).to.not.have.property('password_digest');",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ User registered successfully');",
+                  "    console.log('  - User ID: ' + jsonData.data.id);",
+                  "    console.log('  - Email: ' + jsonData.data.attributes.email);",
+                  "    console.log('  - Role: ' + jsonData.data.attributes.role);",
+                  "    console.log('  - Token saved to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"email\": \"admin@soulingo.com\",\n    \"password\": \"admin123456\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            },
+            "description": "Authenticates user and returns JWT token.\n\n**Request Body:**\n- `email` (required): User's email address\n- `password` (required): User's password\n\n**Success Response (200):**\nReturns user data and JWT token\n\n**Error Response (401):**\nInvalid credentials"
+          },
+          "response": [
+            {
+              "name": "Success - Login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user\": {\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"user\",\n    \"attributes\": {\n      \"id\": 1,\n      \"email\": \"user@example.com\",\n      \"name\": \"John Doe\",\n      \"role\": \"student\",\n      \"avatar_url\": null\n    }\n  },\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDk4NTYwMDB9.example_token\"\n}"
+            },
+            {
+              "name": "Error - Invalid Credentials",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user\": {\n    \"email\": \"user@example.com\",\n    \"password\": \"wrongpassword\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "auth", "login"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": {\n    \"code\": \"authentication_failed\",\n    \"message\": \"Invalid email or password\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful login",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    // Save auth token to collection variable",
+                  "    pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "    ",
+                  "    // Save user ID to collection variable",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.id);",
+                  "    ",
+                  "    // Verify response structure",
+                  "    pm.test('Response has valid token', function() {",
+                  "        pm.expect(jsonData).to.have.property('token');",
+                  "        pm.expect(jsonData.token).to.be.a('string');",
+                  "        pm.expect(jsonData.token.length).to.be.above(20);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response has complete user data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'user');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('email');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('name');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('role');",
+                  "    });",
+                  "    ",
+                  "    pm.test('User role is valid', function() {",
+                  "        pm.expect(['student', 'admin']).to.include(jsonData.data.attributes.role);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response does not contain password', function() {",
+                  "        pm.expect(jsonData.data.attributes).to.not.have.property('password');",
+                  "        pm.expect(jsonData.data.attributes).to.not.have.property('password_digest');",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ User logged in successfully');",
+                  "    console.log('  - User ID: ' + jsonData.data.id);",
+                  "    console.log('  - Email: ' + jsonData.data.attributes.email);",
+                  "    console.log('  - Role: ' + jsonData.data.attributes.role);",
+                  "    console.log('  - Token saved to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "me"]
+            },
+            "description": "Returns the currently authenticated user's information.\n\n**Authentication:** Required (Bearer token)\n\n**Success Response (200):**\nReturns current user data\n\n**Error Response (401):**\nUnauthorized - invalid or missing token"
+          },
+          "response": [
+            {
+              "name": "Success - Current User",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/auth/me",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "auth", "me"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"user\",\n    \"attributes\": {\n      \"id\": 1,\n      \"email\": \"user@example.com\",\n      \"name\": \"John Doe\",\n      \"role\": \"student\",\n      \"avatar_url\": null\n    }\n  }\n}"
+            },
+            {
+              "name": "Error - Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/v1/auth/me",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "auth", "me"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": {\n    \"code\": \"unauthorized\",\n    \"message\": \"Authentication required\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has complete user data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'user');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('email');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('name');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('role');",
+                  "    });",
+                  "    ",
+                  "    pm.test('User role is valid', function() {",
+                  "        pm.expect(['student', 'admin']).to.include(jsonData.data.attributes.role);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Email format is valid', function() {",
+                  "        var email = jsonData.data.attributes.email;",
+                  "        pm.expect(email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response does not contain password', function() {",
+                  "        pm.expect(jsonData.data.attributes).to.not.have.property('password');",
+                  "        pm.expect(jsonData.data.attributes).to.not.have.property('password_digest');",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Current user retrieved successfully');",
+                  "    console.log('  - User ID: ' + jsonData.data.id);",
+                  "    console.log('  - Email: ' + jsonData.data.attributes.email);",
+                  "    console.log('  - Name: ' + jsonData.data.attributes.name);",
+                  "    console.log('  - Role: ' + jsonData.data.attributes.role);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "description": "Course management endpoints. List and Get endpoints are public. Create, Update, and Delete require admin authentication.",
+      "item": [
+        {
+          "name": "List Courses",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/courses?page=1&per_page=20&language_code=en&level=A1",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20",
+                  "description": "Items per page (default: 20, max: 100)"
+                },
+                {
+                  "key": "language_code",
+                  "value": "en",
+                  "disabled": true,
+                  "description": "Filter by language code (e.g., 'en', 'tr')"
+                },
+                {
+                  "key": "level",
+                  "value": "A1",
+                  "disabled": true,
+                  "description": "Filter by level (A1, A2, B1, B2, C1, C2)"
+                }
+              ]
+            },
+            "description": "Returns a paginated list of courses with optional filtering.\n\n**Authentication:** Not required (public endpoint)\n\n**Query Parameters:**\n- `page` (optional): Page number (default: 1)\n- `per_page` (optional): Items per page (default: 20, max: 100)\n- `language_code` (optional): Filter by language code\n- `level` (optional): Filter by level (A1, A2, B1, B2, C1, C2)\n\n**Success Response (200):**\nReturns paginated list of courses with metadata"
+          },
+          "response": [
+            {
+              "name": "Success - Course List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses?page=1&per_page=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "per_page",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"type\": \"course\",\n      \"attributes\": {\n        \"id\": 1,\n        \"title\": \"İngilizce A1\",\n        \"language_code\": \"en\",\n        \"level\": \"A1\",\n        \"description\": \"Temel İngilizce kursu\",\n        \"is_published\": true,\n        \"lessons_count\": 10\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\": \"course\",\n      \"attributes\": {\n        \"id\": 2,\n        \"title\": \"İngilizce A2\",\n        \"language_code\": \"en\",\n        \"level\": \"A2\",\n        \"description\": \"Orta seviye İngilizce kursu\",\n        \"is_published\": true,\n        \"lessons_count\": 12\n      }\n    }\n  ],\n  \"meta\": {\n    \"page\": 1,\n    \"per_page\": 20,\n    \"total\": 2\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has data array', function() {",
+                  "        pm.expect(jsonData).to.have.property('data');",
+                  "        pm.expect(jsonData.data).to.be.an('array');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Response has complete pagination metadata', function() {",
+                  "        pm.expect(jsonData.meta).to.have.property('page');",
+                  "        pm.expect(jsonData.meta).to.have.property('per_page');",
+                  "        pm.expect(jsonData.meta).to.have.property('total');",
+                  "        pm.expect(jsonData.meta.page).to.be.a('number');",
+                  "        pm.expect(jsonData.meta.per_page).to.be.a('number');",
+                  "        pm.expect(jsonData.meta.total).to.be.a('number');",
+                  "    });",
+                  "    ",
+                  "    // Validate course structure if courses exist",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.test('Course items have correct structure', function() {",
+                  "            var course = jsonData.data[0];",
+                  "            pm.expect(course).to.have.property('id');",
+                  "            pm.expect(course.id).to.be.a('number');",
+                  "            pm.expect(course).to.have.property('type', 'course');",
+                  "            pm.expect(course.attributes).to.have.property('title');",
+                  "            pm.expect(course.attributes).to.have.property('language_code');",
+                  "            pm.expect(course.attributes).to.have.property('is_published');",
+                  "        });",
+                  "        ",
+                  "        pm.test('Course level is valid if present', function() {",
+                  "            var course = jsonData.data[0];",
+                  "            if (course.attributes.level) {",
+                  "                pm.expect(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).to.include(course.attributes.level);",
+                  "            }",
+                  "        });",
+                  "        ",
+                  "        pm.test('is_published is boolean', function() {",
+                  "            pm.expect(jsonData.data[0].attributes.is_published).to.be.a('boolean');",
+                  "        });",
+                  "        ",
+                  "        // Save first course ID",
+                  "        pm.collectionVariables.set('course_id', jsonData.data[0].id);",
+                  "        console.log('✓ Courses retrieved successfully');",
+                  "        console.log('  - Total courses: ' + jsonData.meta.total);",
+                  "        console.log('  - Page: ' + jsonData.meta.page);",
+                  "        console.log('  - Per page: ' + jsonData.meta.per_page);",
+                  "        console.log('  - First course ID saved: ' + jsonData.data[0].id);",
+                  "    } else {",
+                  "        console.log('✓ Courses retrieved (empty list)');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Course",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}"]
+            },
+            "description": "Returns detailed information about a specific course.\n\n**Authentication:** Not required (public endpoint)\n\n**Path Parameters:**\n- `id`: Course ID\n\n**Success Response (200):**\nReturns course details\n\n**Error Response (404):**\nCourse not found"
+          },
+          "response": [
+            {
+              "name": "Success - Course Details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"course\",\n    \"attributes\": {\n      \"id\": 1,\n      \"title\": \"İngilizce A1\",\n      \"language_code\": \"en\",\n      \"level\": \"A1\",\n      \"description\": \"Temel İngilizce kursu\",\n      \"is_published\": true,\n      \"lessons_count\": 10\n    }\n  }\n}"
+            },
+            {
+              "name": "Error - Course Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/999",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "999"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": {\n    \"code\": \"not_found\",\n    \"message\": \"Course not found\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has complete course data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'course');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('title');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('language_code');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('level');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('is_published');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Course level is valid', function() {",
+                  "        pm.expect(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).to.include(jsonData.data.attributes.level);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Data types are correct', function() {",
+                  "        pm.expect(jsonData.data.attributes.title).to.be.a('string');",
+                  "        pm.expect(jsonData.data.attributes.language_code).to.be.a('string');",
+                  "        pm.expect(jsonData.data.attributes.is_published).to.be.a('boolean');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Title length is within limit', function() {",
+                  "        pm.expect(jsonData.data.attributes.title.length).to.be.at.most(120);",
+                  "    });",
+                  "    ",
+                  "    // Save course ID",
+                  "    pm.collectionVariables.set('course_id', jsonData.data.id);",
+                  "    console.log('✓ Course details retrieved successfully');",
+                  "    console.log('  - Course ID: ' + jsonData.data.id);",
+                  "    console.log('  - Title: ' + jsonData.data.attributes.title);",
+                  "    console.log('  - Language: ' + jsonData.data.attributes.language_code);",
+                  "    console.log('  - Level: ' + jsonData.data.attributes.level);",
+                  "    console.log('  - Published: ' + jsonData.data.attributes.is_published);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": {\n    \"title\": \"İngilizce A1\",\n    \"language_code\": \"en\",\n    \"level\": \"A1\",\n    \"description\": \"Temel İngilizce kursu\",\n    \"is_published\": false\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/courses",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses"]
+            },
+            "description": "Creates a new course.\n\n**Authentication:** Required (Admin only)\n\n**Request Body:**\n- `title` (required): Course title (max 120 characters)\n- `language_code` (required): Language code (e.g., 'en', 'tr')\n- `level` (optional): Course level (A1, A2, B1, B2, C1, C2)\n- `description` (optional): Course description\n- `is_published` (optional): Publication status (default: false)\n\n**Success Response (201):**\nReturns created course\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Course Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"course\": {\n    \"title\": \"İngilizce A1\",\n    \"language_code\": \"en\",\n    \"level\": \"A1\",\n    \"description\": \"Temel İngilizce kursu\",\n    \"is_published\": false\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/courses",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"course\",\n    \"attributes\": {\n      \"id\": 1,\n      \"title\": \"İngilizce A1\",\n      \"language_code\": \"en\",\n      \"level\": \"A1\",\n      \"description\": \"Temel İngilizce kursu\",\n      \"is_published\": false,\n      \"lessons_count\": 0\n    }\n  }\n}"
+            },
+            {
+              "name": "Error - Forbidden (Not Admin)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"course\": {\n    \"title\": \"İngilizce A1\",\n    \"language_code\": \"en\",\n    \"level\": \"A1\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/courses",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses"]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": {\n    \"code\": \"forbidden\",\n    \"message\": \"Admin access required\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful creation",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    // Save course ID to collection variable",
+                  "    pm.collectionVariables.set('course_id', jsonData.data.id);",
+                  "    ",
+                  "    pm.test('Response has complete course data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'course');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('title');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('language_code');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('level');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('is_published');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Course level is valid', function() {",
+                  "        pm.expect(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).to.include(jsonData.data.attributes.level);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Data types are correct', function() {",
+                  "        pm.expect(jsonData.data.attributes.title).to.be.a('string');",
+                  "        pm.expect(jsonData.data.attributes.language_code).to.be.a('string');",
+                  "        pm.expect(jsonData.data.attributes.is_published).to.be.a('boolean');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Title length is within limit', function() {",
+                  "        pm.expect(jsonData.data.attributes.title.length).to.be.at.most(120);",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Course created successfully');",
+                  "    console.log('  - Course ID: ' + jsonData.data.id);",
+                  "    console.log('  - Title: ' + jsonData.data.attributes.title);",
+                  "    console.log('  - Language: ' + jsonData.data.attributes.language_code);",
+                  "    console.log('  - Level: ' + jsonData.data.attributes.level);",
+                  "    console.log('  - Published: ' + jsonData.data.attributes.is_published);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course\": {\n    \"title\": \"Updated Course Title\",\n    \"is_published\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}"]
+            },
+            "description": "Updates a course.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `id`: Course ID\n\n**Request Body:** (all fields optional)\n- `title`: Course title\n- `language_code`: Language code\n- `level`: Course level\n- `description`: Course description\n- `is_published`: Publication status\n\n**Success Response (200):**\nReturns updated course\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Course Updated",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"course\": {\n    \"title\": \"Updated Course Title\",\n    \"is_published\": true\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"course\",\n    \"attributes\": {\n      \"id\": 1,\n      \"title\": \"Updated Course Title\",\n      \"language_code\": \"en\",\n      \"level\": \"A1\",\n      \"description\": \"Temel İngilizce kursu\",\n      \"is_published\": true,\n      \"lessons_count\": 0\n    }\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful update",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has complete updated course data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'course');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('title');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('language_code');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('level');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('is_published');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Course level is valid', function() {",
+                  "        pm.expect(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).to.include(jsonData.data.attributes.level);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Data types are correct', function() {",
+                  "        pm.expect(jsonData.data.attributes.title).to.be.a('string');",
+                  "        pm.expect(jsonData.data.attributes.language_code).to.be.a('string');",
+                  "        pm.expect(jsonData.data.attributes.is_published).to.be.a('boolean');",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Course updated successfully');",
+                  "    console.log('  - Course ID: ' + jsonData.data.id);",
+                  "    console.log('  - Title: ' + jsonData.data.attributes.title);",
+                  "    console.log('  - Published: ' + jsonData.data.attributes.is_published);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lessons",
+      "description": "Lesson management endpoints. Get and List endpoints require authentication. Create, Update, and Delete require admin authentication.",
+      "item": [
+        {
+          "name": "List Course Lessons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}/lessons",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}", "lessons"]
+            },
+            "description": "Returns lessons for a specific course.\n\n**Authentication:** Required\n\n**Path Parameters:**\n- `course_id`: Course ID\n\n**Success Response (200):**\nReturns list of lessons ordered by order_index"
+          },
+          "response": [
+            {
+              "name": "Success - Lesson List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1/lessons",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1", "lessons"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"type\": \"lesson\",\n      \"attributes\": {\n        \"id\": 1,\n        \"title\": \"Ders 1: Tanışma\",\n        \"order_index\": 1,\n        \"description\": \"İlk ders\",\n        \"video_url\": \"https://example.com/video.mp4\",\n        \"expected_duration_minutes\": 30\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\": \"lesson\",\n      \"attributes\": {\n        \"id\": 2,\n        \"title\": \"Ders 2: Selamlaşma\",\n        \"order_index\": 2,\n        \"description\": \"İkinci ders\",\n        \"video_url\": \"https://example.com/video2.mp4\",\n        \"expected_duration_minutes\": 25\n      }\n    }\n  ]\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has data array', function() {",
+                  "        pm.expect(jsonData).to.have.property('data');",
+                  "        pm.expect(jsonData.data).to.be.an('array');",
+                  "    });",
+                  "    ",
+                  "    // Validate lesson structure if lessons exist",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.test('Lesson items have correct structure', function() {",
+                  "            var lesson = jsonData.data[0];",
+                  "            pm.expect(lesson).to.have.property('id');",
+                  "            pm.expect(lesson.id).to.be.a('number');",
+                  "            pm.expect(lesson).to.have.property('type', 'lesson');",
+                  "            pm.expect(lesson.attributes).to.have.property('title');",
+                  "            pm.expect(lesson.attributes).to.have.property('order_index');",
+                  "        });",
+                  "        ",
+                  "        pm.test('order_index is valid', function() {",
+                  "            var lesson = jsonData.data[0];",
+                  "            pm.expect(lesson.attributes.order_index).to.be.a('number');",
+                  "            pm.expect(lesson.attributes.order_index).to.be.at.least(1);",
+                  "        });",
+                  "        ",
+                  "        pm.test('Video URL format is valid if present', function() {",
+                  "            var lesson = jsonData.data[0];",
+                  "            if (lesson.attributes.video_url) {",
+                  "                pm.expect(lesson.attributes.video_url).to.match(/^https?:\\/\\/.+/);",
+                  "            }",
+                  "        });",
+                  "        ",
+                  "        // Save first lesson ID",
+                  "        pm.collectionVariables.set('lesson_id', jsonData.data[0].id);",
+                  "        console.log('✓ Lessons retrieved successfully');",
+                  "        console.log('  - Total lessons: ' + jsonData.data.length);",
+                  "        console.log('  - First lesson ID saved: ' + jsonData.data[0].id);",
+                  "    } else {",
+                  "        console.log('✓ Lessons retrieved (empty list)');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": {\n    \"title\": \"Ders 1: Tanışma\",\n    \"order_index\": 1,\n    \"description\": \"İlk ders\",\n    \"video_url\": \"https://example.com/video.mp4\",\n    \"expected_duration_minutes\": 30\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}/lessons",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}", "lessons"]
+            },
+            "description": "Creates a new lesson for a course.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `course_id`: Course ID\n\n**Request Body:**\n- `title` (required): Lesson title\n- `order_index` (required): Lesson order (minimum: 1)\n- `description` (optional): Lesson description\n- `video_url` (optional): Video URL\n- `expected_duration_minutes` (optional): Expected duration in minutes\n\n**Success Response (201):**\nReturns created lesson\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Lesson Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"lesson\": {\n    \"title\": \"Ders 1: Tanışma\",\n    \"order_index\": 1,\n    \"description\": \"İlk ders\",\n    \"video_url\": \"https://example.com/video.mp4\",\n    \"expected_duration_minutes\": 30\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1/lessons",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1", "lessons"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"lesson\",\n    \"attributes\": {\n      \"id\": 1,\n      \"title\": \"Ders 1: Tanışma\",\n      \"order_index\": 1,\n      \"description\": \"İlk ders\",\n      \"video_url\": \"https://example.com/video.mp4\",\n      \"expected_duration_minutes\": 30\n    }\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful creation",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    // Save lesson ID to collection variable",
+                  "    pm.collectionVariables.set('lesson_id', jsonData.data.id);",
+                  "    ",
+                  "    pm.test('Response has complete lesson data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'lesson');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('title');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('order_index');",
+                  "    });",
+                  "    ",
+                  "    pm.test('order_index is valid', function() {",
+                  "        pm.expect(jsonData.data.attributes.order_index).to.be.a('number');",
+                  "        pm.expect(jsonData.data.attributes.order_index).to.be.at.least(1);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Data types are correct', function() {",
+                  "        pm.expect(jsonData.data.attributes.title).to.be.a('string');",
+                  "        if (jsonData.data.attributes.expected_duration_minutes) {",
+                  "            pm.expect(jsonData.data.attributes.expected_duration_minutes).to.be.a('number');",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    pm.test('Video URL format is valid if present', function() {",
+                  "        if (jsonData.data.attributes.video_url) {",
+                  "            pm.expect(jsonData.data.attributes.video_url).to.match(/^https?:\\/\\/.+/);",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Lesson created successfully');",
+                  "    console.log('  - Lesson ID: ' + jsonData.data.id);",
+                  "    console.log('  - Title: ' + jsonData.data.attributes.title);",
+                  "    console.log('  - Order: ' + jsonData.data.attributes.order_index);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Lesson",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/lessons/{{lesson_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "lessons", "{{lesson_id}}"]
+            },
+            "description": "Returns detailed information about a specific lesson.\n\n**Authentication:** Required\n\n**Path Parameters:**\n- `id`: Lesson ID\n\n**Success Response (200):**\nReturns lesson details\n\n**Error Response (404):**\nLesson not found"
+          },
+          "response": [
+            {
+              "name": "Success - Lesson Details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/lessons/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "lessons", "1"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"lesson\",\n    \"attributes\": {\n      \"id\": 1,\n      \"title\": \"Ders 1: Tanışma\",\n      \"order_index\": 1,\n      \"description\": \"İlk ders\",\n      \"video_url\": \"https://example.com/video.mp4\",\n      \"expected_duration_minutes\": 30\n    }\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has complete lesson data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'lesson');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('title');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('order_index');",
+                  "    });",
+                  "    ",
+                  "    pm.test('order_index is valid', function() {",
+                  "        pm.expect(jsonData.data.attributes.order_index).to.be.a('number');",
+                  "        pm.expect(jsonData.data.attributes.order_index).to.be.at.least(1);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Data types are correct', function() {",
+                  "        pm.expect(jsonData.data.attributes.title).to.be.a('string');",
+                  "        if (jsonData.data.attributes.expected_duration_minutes) {",
+                  "            pm.expect(jsonData.data.attributes.expected_duration_minutes).to.be.a('number');",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    pm.test('Video URL format is valid if present', function() {",
+                  "        if (jsonData.data.attributes.video_url) {",
+                  "            pm.expect(jsonData.data.attributes.video_url).to.match(/^https?:\\/\\/.+/);",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    // Save lesson ID",
+                  "    pm.collectionVariables.set('lesson_id', jsonData.data.id);",
+                  "    console.log('✓ Lesson details retrieved successfully');",
+                  "    console.log('  - Lesson ID: ' + jsonData.data.id);",
+                  "    console.log('  - Title: ' + jsonData.data.attributes.title);",
+                  "    console.log('  - Order: ' + jsonData.data.attributes.order_index);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Lesson",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lesson\": {\n    \"title\": \"Updated Lesson Title\",\n    \"description\": \"Updated description\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/lessons/{{lesson_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "lessons", "{{lesson_id}}"]
+            },
+            "description": "Updates a lesson.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `id`: Lesson ID\n\n**Request Body:** (all fields optional)\n- `title`: Lesson title\n- `order_index`: Lesson order\n- `description`: Lesson description\n- `video_url`: Video URL\n- `expected_duration_minutes`: Expected duration\n\n**Success Response (200):**\nReturns updated lesson\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Lesson Updated",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"lesson\": {\n    \"title\": \"Updated Lesson Title\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/lessons/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "lessons", "1"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"lesson\",\n    \"attributes\": {\n      \"id\": 1,\n      \"title\": \"Updated Lesson Title\",\n      \"order_index\": 1,\n      \"description\": \"İlk ders\",\n      \"video_url\": \"https://example.com/video.mp4\",\n      \"expected_duration_minutes\": 30\n    }\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful update",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has complete updated lesson data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'lesson');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('title');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('order_index');",
+                  "    });",
+                  "    ",
+                  "    pm.test('order_index is valid', function() {",
+                  "        pm.expect(jsonData.data.attributes.order_index).to.be.a('number');",
+                  "        pm.expect(jsonData.data.attributes.order_index).to.be.at.least(1);",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Lesson updated successfully');",
+                  "    console.log('  - Lesson ID: ' + jsonData.data.id);",
+                  "    console.log('  - Title: ' + jsonData.data.attributes.title);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "description": "Enrollment management endpoints. All endpoints require authentication.",
+      "item": [
+        {
+          "name": "Enroll in Course",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}/enroll",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}", "enroll"]
+            },
+            "description": "Enrolls the current user in a course.\n\n**Authentication:** Required\n\n**Path Parameters:**\n- `id`: Course ID\n\n**Success Response (201):**\nReturns enrollment record\n\n**Error Response (422):**\nAlready enrolled or validation error"
+          },
+          "response": [
+            {
+              "name": "Success - Enrolled",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1/enroll",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1", "enroll"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"enrollment\",\n    \"attributes\": {\n      \"id\": 1,\n      \"status\": \"active\",\n      \"progress_percent\": 0,\n      \"started_at\": \"2024-01-15T10:30:00Z\",\n      \"completed_at\": null\n    }\n  }\n}"
+            },
+            {
+              "name": "Error - Already Enrolled",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1/enroll",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1", "enroll"]
+                }
+              },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": {\n    \"code\": \"validation_error\",\n    \"message\": \"Already enrolled in this course\"\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful enrollment",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    // Save enrollment ID to collection variable",
+                  "    pm.collectionVariables.set('enrollment_id', jsonData.data.id);",
+                  "    ",
+                  "    pm.test('Response has complete enrollment data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'enrollment');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('status');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('progress_percent');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('started_at');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Enrollment status is valid', function() {",
+                  "        pm.expect(['active', 'completed', 'dropped']).to.include(jsonData.data.attributes.status);",
+                  "    });",
+                  "    ",
+                  "    pm.test('Progress percent is valid', function() {",
+                  "        pm.expect(jsonData.data.attributes.progress_percent).to.be.a('number');",
+                  "        pm.expect(jsonData.data.attributes.progress_percent).to.be.at.least(0);",
+                  "        pm.expect(jsonData.data.attributes.progress_percent).to.be.at.most(100);",
+                  "    });",
+                  "    ",
+                  "    pm.test('started_at is valid ISO 8601 date', function() {",
+                  "        pm.expect(jsonData.data.attributes.started_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Enrolled in course successfully');",
+                  "    console.log('  - Enrollment ID: ' + jsonData.data.id);",
+                  "    console.log('  - Status: ' + jsonData.data.attributes.status);",
+                  "    console.log('  - Progress: ' + jsonData.data.attributes.progress_percent + '%');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/users/{{user_id}}/courses",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "{{user_id}}", "courses"]
+            },
+            "description": "Returns courses enrolled by a user.\n\n**Authentication:** Required (self or admin only)\n\n**Path Parameters:**\n- `id`: User ID\n\n**Success Response (200):**\nReturns list of enrollments with course details\n\n**Error Response (403):**\nForbidden - can only view own courses unless admin"
+          },
+          "response": [
+            {
+              "name": "Success - User Enrollments",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/users/1/courses",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "users", "1", "courses"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"type\": \"enrollment\",\n      \"attributes\": {\n        \"id\": 1,\n        \"status\": \"active\",\n        \"progress_percent\": 45,\n        \"started_at\": \"2024-01-15T10:30:00Z\",\n        \"completed_at\": null\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\": \"enrollment\",\n      \"attributes\": {\n        \"id\": 2,\n        \"status\": \"completed\",\n        \"progress_percent\": 100,\n        \"started_at\": \"2024-01-10T08:00:00Z\",\n        \"completed_at\": \"2024-01-20T15:30:00Z\"\n      }\n    }\n  ]\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has data array', function() {",
+                  "        pm.expect(jsonData).to.have.property('data');",
+                  "        pm.expect(jsonData.data).to.be.an('array');",
+                  "    });",
+                  "    ",
+                  "    // Validate enrollment structure if enrollments exist",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.test('Enrollment items have correct structure', function() {",
+                  "            var item = jsonData.data[0];",
+                  "            pm.expect(item).to.have.property('id');",
+                  "            pm.expect(item.id).to.be.a('number');",
+                  "            pm.expect(item).to.have.property('type');",
+                  "            pm.expect(item.attributes).to.exist;",
+                  "        });",
+                  "        ",
+                  "        pm.test('Enrollment status is valid', function() {",
+                  "            var item = jsonData.data[0];",
+                  "            if (item.type === 'enrollment' && item.attributes.status) {",
+                  "                pm.expect(['active', 'completed', 'dropped']).to.include(item.attributes.status);",
+                  "            } else if (item.attributes.enrollment && item.attributes.enrollment.status) {",
+                  "                pm.expect(['active', 'completed', 'dropped']).to.include(item.attributes.enrollment.status);",
+                  "            }",
+                  "        });",
+                  "        ",
+                  "        pm.test('Progress percent is valid', function() {",
+                  "            var item = jsonData.data[0];",
+                  "            var progress = item.attributes.progress_percent || (item.attributes.enrollment && item.attributes.enrollment.progress_percent);",
+                  "            if (progress !== undefined && progress !== null) {",
+                  "                pm.expect(progress).to.be.a('number');",
+                  "                pm.expect(progress).to.be.at.least(0);",
+                  "                pm.expect(progress).to.be.at.most(100);",
+                  "            }",
+                  "        });",
+                  "        ",
+                  "        console.log('✓ User courses retrieved successfully');",
+                  "        console.log('  - Total enrollments: ' + jsonData.data.length);",
+                  "    } else {",
+                  "        console.log('✓ User courses retrieved (no enrollments)');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Course Students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}/students",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}", "students"]
+            },
+            "description": "Returns list of students enrolled in a course.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `id`: Course ID\n\n**Success Response (200):**\nReturns list of enrollments for the course\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Course Students",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1/students",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1", "students"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"type\": \"enrollment\",\n      \"attributes\": {\n        \"id\": 1,\n        \"status\": \"active\",\n        \"progress_percent\": 45,\n        \"started_at\": \"2024-01-15T10:30:00Z\",\n        \"completed_at\": null\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\": \"enrollment\",\n      \"attributes\": {\n        \"id\": 2,\n        \"status\": \"active\",\n        \"progress_percent\": 20,\n        \"started_at\": \"2024-01-16T09:00:00Z\",\n        \"completed_at\": null\n      }\n    }\n  ]\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has data array', function() {",
+                  "        pm.expect(jsonData).to.have.property('data');",
+                  "        pm.expect(jsonData.data).to.be.an('array');",
+                  "    });",
+                  "    ",
+                  "    // Validate enrollment structure if students exist",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.test('Enrollment items have correct structure', function() {",
+                  "            var enrollment = jsonData.data[0];",
+                  "            pm.expect(enrollment).to.have.property('id');",
+                  "            pm.expect(enrollment.id).to.be.a('number');",
+                  "            pm.expect(enrollment).to.have.property('type', 'enrollment');",
+                  "            pm.expect(enrollment.attributes).to.have.property('status');",
+                  "            pm.expect(enrollment.attributes).to.have.property('progress_percent');",
+                  "        });",
+                  "        ",
+                  "        pm.test('Enrollment status is valid', function() {",
+                  "            var enrollment = jsonData.data[0];",
+                  "            pm.expect(['active', 'completed', 'dropped']).to.include(enrollment.attributes.status);",
+                  "        });",
+                  "        ",
+                  "        pm.test('Progress percent is valid', function() {",
+                  "            var enrollment = jsonData.data[0];",
+                  "            pm.expect(enrollment.attributes.progress_percent).to.be.a('number');",
+                  "            pm.expect(enrollment.attributes.progress_percent).to.be.at.least(0);",
+                  "            pm.expect(enrollment.attributes.progress_percent).to.be.at.most(100);",
+                  "        });",
+                  "        ",
+                  "        console.log('✓ Course students retrieved successfully');",
+                  "        console.log('  - Total students: ' + jsonData.data.length);",
+                  "    } else {",
+                  "        console.log('✓ Course students retrieved (no students enrolled)');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SessionAnalyses",
+      "description": "Session analysis endpoints for tracking and scoring user practice sessions. All endpoints require authentication.",
+      "item": [
+        {
+          "name": "Create Session Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_analysis\": {\n    \"overall_score\": 85,\n    \"fluency_score\": 80,\n    \"grammar_score\": 90,\n    \"pronunciation_score\": 85,\n    \"feedback_text\": \"İyi performans gösterdiniz. Akıcılığınızı geliştirmeye devam edin.\",\n    \"recorded_video_url\": \"https://example.com/sessions/video123.mp4\",\n    \"raw_transcript\": \"Hello, my name is John. I am learning English.\",\n    \"session_started_at\": \"2024-01-15T14:00:00Z\",\n    \"session_ended_at\": \"2024-01-15T14:30:00Z\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/lessons/{{lesson_id}}/session_analyses",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "lessons", "{{lesson_id}}", "session_analyses"]
+            },
+            "description": "Creates a new session analysis record for a lesson.\n\n**Authentication:** Required\n\n**Path Parameters:**\n- `lesson_id`: Lesson ID\n\n**Request Body:**\n- `overall_score` (optional): Overall score (0-100)\n- `fluency_score` (optional): Fluency score (0-100)\n- `grammar_score` (optional): Grammar score (0-100)\n- `pronunciation_score` (optional): Pronunciation score (0-100)\n- `feedback_text` (optional): Feedback text\n- `recorded_video_url` (optional): URL to recorded video\n- `raw_transcript` (optional): Transcript of the session\n- `session_started_at` (optional): Session start time\n- `session_ended_at` (optional): Session end time\n\n**Success Response (201):**\nReturns created session analysis"
+          },
+          "response": [
+            {
+              "name": "Success - Session Analysis Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"session_analysis\": {\n    \"overall_score\": 85,\n    \"fluency_score\": 80,\n    \"grammar_score\": 90,\n    \"pronunciation_score\": 85,\n    \"feedback_text\": \"İyi performans gösterdiniz\",\n    \"recorded_video_url\": \"https://example.com/video.mp4\",\n    \"raw_transcript\": \"Kullanıcının konuşma metni\",\n    \"session_started_at\": \"2024-01-01T12:00:00Z\",\n    \"session_ended_at\": \"2024-01-01T12:30:00Z\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/v1/lessons/1/session_analyses",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "lessons", "1", "session_analyses"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"type\": \"session_analysis\",\n    \"attributes\": {\n      \"id\": 1,\n      \"overall_score\": 85,\n      \"fluency_score\": 80,\n      \"grammar_score\": 90,\n      \"pronunciation_score\": 85,\n      \"feedback_text\": \"İyi performans gösterdiniz\",\n      \"recorded_video_url\": \"https://example.com/video.mp4\",\n      \"raw_transcript\": \"Kullanıcının konuşma metni\",\n      \"session_started_at\": \"2024-01-01T12:00:00Z\",\n      \"session_ended_at\": \"2024-01-01T12:30:00Z\"\n    }\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful creation",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    // Save session analysis ID to collection variable",
+                  "    pm.collectionVariables.set('session_analysis_id', jsonData.data.id);",
+                  "    ",
+                  "    pm.test('Response has complete session analysis data', function() {",
+                  "        pm.expect(jsonData.data).to.have.property('id');",
+                  "        pm.expect(jsonData.data.id).to.be.a('number');",
+                  "        pm.expect(jsonData.data).to.have.property('type', 'session_analysis');",
+                  "        pm.expect(jsonData.data.attributes).to.have.property('overall_score');",
+                  "    });",
+                  "    ",
+                  "    pm.test('Scores are valid if present', function() {",
+                  "        var attrs = jsonData.data.attributes;",
+                  "        if (attrs.overall_score !== null) {",
+                  "            pm.expect(attrs.overall_score).to.be.a('number');",
+                  "            pm.expect(attrs.overall_score).to.be.at.least(0);",
+                  "            pm.expect(attrs.overall_score).to.be.at.most(100);",
+                  "        }",
+                  "        if (attrs.fluency_score !== null) {",
+                  "            pm.expect(attrs.fluency_score).to.be.at.least(0);",
+                  "            pm.expect(attrs.fluency_score).to.be.at.most(100);",
+                  "        }",
+                  "        if (attrs.grammar_score !== null) {",
+                  "            pm.expect(attrs.grammar_score).to.be.at.least(0);",
+                  "            pm.expect(attrs.grammar_score).to.be.at.most(100);",
+                  "        }",
+                  "        if (attrs.pronunciation_score !== null) {",
+                  "            pm.expect(attrs.pronunciation_score).to.be.at.least(0);",
+                  "            pm.expect(attrs.pronunciation_score).to.be.at.most(100);",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    pm.test('Video URL format is valid if present', function() {",
+                  "        if (jsonData.data.attributes.recorded_video_url) {",
+                  "            pm.expect(jsonData.data.attributes.recorded_video_url).to.match(/^https?:\\/\\/.+/);",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    pm.test('Timestamps are valid ISO 8601 dates if present', function() {",
+                  "        if (jsonData.data.attributes.session_started_at) {",
+                  "            pm.expect(jsonData.data.attributes.session_started_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+                  "        }",
+                  "        if (jsonData.data.attributes.session_ended_at) {",
+                  "            pm.expect(jsonData.data.attributes.session_ended_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+                  "        }",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Session analysis created successfully');",
+                  "    console.log('  - Session Analysis ID: ' + jsonData.data.id);",
+                  "    console.log('  - Overall Score: ' + jsonData.data.attributes.overall_score);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Session Analyses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/users/{{user_id}}/session_analyses?lesson_id=1&start_date=2024-01-01&end_date=2024-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "{{user_id}}", "session_analyses"],
+              "query": [
+                {
+                  "key": "lesson_id",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Filter by lesson ID"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01",
+                  "disabled": true,
+                  "description": "Filter by start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-12-31",
+                  "disabled": true,
+                  "description": "Filter by end date (YYYY-MM-DD)"
+                }
+              ]
+            },
+            "description": "Returns session analyses for a user with optional filtering.\n\n**Authentication:** Required (self or admin only)\n\n**Path Parameters:**\n- `id`: User ID\n\n**Query Parameters:**\n- `lesson_id` (optional): Filter by lesson ID\n- `start_date` (optional): Filter by start date (YYYY-MM-DD)\n- `end_date` (optional): Filter by end date (YYYY-MM-DD)\n\n**Success Response (200):**\nReturns list of session analyses\n\n**Error Response (403):**\nForbidden - can only view own analyses unless admin"
+          },
+          "response": [
+            {
+              "name": "Success - User Session Analyses",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/users/1/session_analyses",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "users", "1", "session_analyses"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"type\": \"session_analysis\",\n      \"attributes\": {\n        \"id\": 1,\n        \"overall_score\": 85,\n        \"fluency_score\": 80,\n        \"grammar_score\": 90,\n        \"pronunciation_score\": 85,\n        \"feedback_text\": \"İyi performans gösterdiniz\",\n        \"recorded_video_url\": \"https://example.com/video.mp4\",\n        \"raw_transcript\": \"Kullanıcının konuşma metni\",\n        \"session_started_at\": \"2024-01-15T12:00:00Z\",\n        \"session_ended_at\": \"2024-01-15T12:30:00Z\"\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\": \"session_analysis\",\n      \"attributes\": {\n        \"id\": 2,\n        \"overall_score\": 78,\n        \"fluency_score\": 75,\n        \"grammar_score\": 82,\n        \"pronunciation_score\": 77,\n        \"feedback_text\": \"Gelişme gösteriyorsunuz\",\n        \"recorded_video_url\": \"https://example.com/video2.mp4\",\n        \"raw_transcript\": \"Another session transcript\",\n        \"session_started_at\": \"2024-01-16T10:00:00Z\",\n        \"session_ended_at\": \"2024-01-16T10:25:00Z\"\n      }\n    }\n  ]\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has data array', function() {",
+                  "        pm.expect(jsonData).to.have.property('data');",
+                  "        pm.expect(jsonData.data).to.be.an('array');",
+                  "    });",
+                  "    ",
+                  "    // Validate session analysis structure if sessions exist",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.test('Session analysis items have correct structure', function() {",
+                  "            var session = jsonData.data[0];",
+                  "            pm.expect(session).to.have.property('id');",
+                  "            pm.expect(session.id).to.be.a('number');",
+                  "            pm.expect(session).to.have.property('type', 'session_analysis');",
+                  "            pm.expect(session.attributes).to.have.property('overall_score');",
+                  "        });",
+                  "        ",
+                  "        pm.test('Scores are valid if present', function() {",
+                  "            var attrs = jsonData.data[0].attributes;",
+                  "            if (attrs.overall_score !== null) {",
+                  "                pm.expect(attrs.overall_score).to.be.a('number');",
+                  "                pm.expect(attrs.overall_score).to.be.at.least(0);",
+                  "                pm.expect(attrs.overall_score).to.be.at.most(100);",
+                  "            }",
+                  "        });",
+                  "        ",
+                  "        console.log('✓ User session analyses retrieved successfully');",
+                  "        console.log('  - Total sessions: ' + jsonData.data.length);",
+                  "    } else {",
+                  "        console.log('✓ User session analyses retrieved (no sessions)');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Lesson Session Analyses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/lessons/{{lesson_id}}/session_analyses",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "lessons", "{{lesson_id}}", "session_analyses"]
+            },
+            "description": "Returns session analyses for a specific lesson.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `lesson_id`: Lesson ID\n\n**Success Response (200):**\nReturns list of session analyses for the lesson\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Lesson Session Analyses",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/lessons/1/session_analyses",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "lessons", "1", "session_analyses"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"type\": \"session_analysis\",\n      \"attributes\": {\n        \"id\": 1,\n        \"overall_score\": 85,\n        \"fluency_score\": 80,\n        \"grammar_score\": 90,\n        \"pronunciation_score\": 85,\n        \"feedback_text\": \"İyi performans gösterdiniz\",\n        \"recorded_video_url\": \"https://example.com/video.mp4\",\n        \"raw_transcript\": \"Kullanıcının konuşma metni\",\n        \"session_started_at\": \"2024-01-15T12:00:00Z\",\n        \"session_ended_at\": \"2024-01-15T12:30:00Z\"\n      }\n    },\n    {\n      \"id\": 3,\n      \"type\": \"session_analysis\",\n      \"attributes\": {\n        \"id\": 3,\n        \"overall_score\": 92,\n        \"fluency_score\": 90,\n        \"grammar_score\": 95,\n        \"pronunciation_score\": 91,\n        \"feedback_text\": \"Mükemmel performans\",\n        \"recorded_video_url\": \"https://example.com/video3.mp4\",\n        \"raw_transcript\": \"Another user's transcript\",\n        \"session_started_at\": \"2024-01-16T14:00:00Z\",\n        \"session_ended_at\": \"2024-01-16T14:28:00Z\"\n      }\n    }\n  ]\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful response",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.test('Response has data array', function() {",
+                  "        pm.expect(jsonData).to.have.property('data');",
+                  "        pm.expect(jsonData.data).to.be.an('array');",
+                  "    });",
+                  "    ",
+                  "    // Validate session analysis structure if sessions exist",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.test('Session analysis items have correct structure', function() {",
+                  "            var session = jsonData.data[0];",
+                  "            pm.expect(session).to.have.property('id');",
+                  "            pm.expect(session.id).to.be.a('number');",
+                  "            pm.expect(session).to.have.property('type', 'session_analysis');",
+                  "            pm.expect(session.attributes).to.have.property('overall_score');",
+                  "        });",
+                  "        ",
+                  "        pm.test('Scores are valid if present', function() {",
+                  "            var attrs = jsonData.data[0].attributes;",
+                  "            if (attrs.overall_score !== null) {",
+                  "                pm.expect(attrs.overall_score).to.be.a('number');",
+                  "                pm.expect(attrs.overall_score).to.be.at.least(0);",
+                  "                pm.expect(attrs.overall_score).to.be.at.most(100);",
+                  "            }",
+                  "        });",
+                  "        ",
+                  "        console.log('✓ Lesson session analyses retrieved successfully');",
+                  "        console.log('  - Total sessions: ' + jsonData.data.length);",
+                  "    } else {",
+                  "        console.log('✓ Lesson session analyses retrieved (no sessions)');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "description": "Cleanup endpoints for deleting test data. Run these last to clean up resources created during testing.",
+      "item": [
+        {
+          "name": "Delete Lesson",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/lessons/{{lesson_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "lessons", "{{lesson_id}}"]
+            },
+            "description": "Deletes a lesson.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `id`: Lesson ID\n\n**Success Response (204):**\nNo content - lesson deleted successfully\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Lesson Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/lessons/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "lessons", "1"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "plain",
+              "header": [],
+              "body": ""
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful deletion",
+                  "pm.test('Status code is 204 No Content', function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 204) {",
+                  "    pm.test('Response body is empty', function() {",
+                  "        pm.expect(pm.response.text()).to.be.empty;",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Lesson deleted successfully');",
+                  "    console.log('  - Status: 204 No Content');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/courses/{{course_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "courses", "{{course_id}}"]
+            },
+            "description": "Deletes a course.\n\n**Authentication:** Required (Admin only)\n\n**Path Parameters:**\n- `id`: Course ID\n\n**Success Response (204):**\nNo content - course deleted successfully\n\n**Error Response (403):**\nForbidden - admin only"
+          },
+          "response": [
+            {
+              "name": "Success - Course Deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/v1/courses/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["v1", "courses", "1"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "plain",
+              "header": [],
+              "body": ""
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test for successful deletion",
+                  "pm.test('Status code is 204 No Content', function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 204) {",
+                  "    pm.test('Response body is empty', function() {",
+                  "        pm.expect(pm.response.text()).to.be.empty;",
+                  "    });",
+                  "    ",
+                  "    console.log('✓ Course deleted successfully');",
+                  "    console.log('  - Status: 204 No Content');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

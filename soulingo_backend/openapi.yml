@@ -1,0 +1,886 @@
+openapi: 3.0.3
+info:
+  title: Soulingo Backend API
+  description: |
+    Soulingo Backend API - Language Learning Platform
+    
+    This API provides endpoints for:
+    - User authentication and authorization
+    - Course and lesson management
+    - Enrollment management
+    - Session analysis and scoring
+    - Real-time communication via WebSocket
+    
+    All endpoints are versioned under `/v1`.
+  version: 1.0.0
+  contact:
+    name: Soulingo API Support
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.soulingo.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Users
+    description: User management endpoints
+  - name: Courses
+    description: Course management endpoints
+  - name: Lessons
+    description: Lesson management endpoints
+  - name: Enrollments
+    description: Enrollment management endpoints
+  - name: SessionAnalyses
+    description: Session analysis endpoints
+
+security:
+  - bearerAuth: []
+
+paths:
+  /v1/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Creates a new user account and returns authentication token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user
+              properties:
+                user:
+                  type: object
+                  required:
+                    - email
+                    - password
+                    - name
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                    password:
+                      type: string
+                      minLength: 8
+                      example: password123
+                    name:
+                      type: string
+                      example: John Doe
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticates user and returns JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user
+              properties:
+                user:
+                  type: object
+                  required:
+                    - email
+                    - password
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: user@example.com
+                    password:
+                      type: string
+                      example: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user
+      description: Returns the currently authenticated user's information
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserData'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/courses:
+    get:
+      tags:
+        - Courses
+      summary: List courses
+      description: Returns a paginated list of courses with optional filtering
+      security: []
+      parameters:
+        - name: language_code
+          in: query
+          schema:
+            type: string
+          description: Filter by language code (e.g., 'en', 'tr')
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [A1, A2, B1, B2, C1, C2]
+          description: Filter by level
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+          description: Items per page
+      responses:
+        '200':
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseListResponse'
+    post:
+      tags:
+        - Courses
+      summary: Create course
+      description: Creates a new course (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - course
+              properties:
+                course:
+                  $ref: '#/components/schemas/CourseInput'
+      responses:
+        '201':
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '403':
+          description: Forbidden (admin only)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/courses/{id}:
+    get:
+      tags:
+        - Courses
+      summary: Get course details
+      description: Returns detailed information about a specific course
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '404':
+          description: Course not found
+    patch:
+      tags:
+        - Courses
+      summary: Update course
+      description: Updates a course (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course:
+                  $ref: '#/components/schemas/CourseInput'
+      responses:
+        '200':
+          description: Course updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '403':
+          description: Forbidden (admin only)
+    delete:
+      tags:
+        - Courses
+      summary: Delete course
+      description: Deletes a course (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Course deleted
+        '403':
+          description: Forbidden (admin only)
+
+  /v1/courses/{id}/enroll:
+    post:
+      tags:
+        - Enrollments
+      summary: Enroll in course
+      description: Enrolls the current user in a course
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Enrollment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentResponse'
+        '422':
+          description: Already enrolled or validation error
+
+  /v1/courses/{id}/students:
+    get:
+      tags:
+        - Enrollments
+      summary: Get course students
+      description: Returns list of students enrolled in a course (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of enrollments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EnrollmentData'
+        '403':
+          description: Forbidden (admin only)
+
+  /v1/courses/{course_id}/lessons:
+    get:
+      tags:
+        - Lessons
+      summary: List course lessons
+      description: Returns lessons for a specific course
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of lessons
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LessonData'
+    post:
+      tags:
+        - Lessons
+      summary: Create lesson
+      description: Creates a new lesson for a course (admin only)
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lesson
+              properties:
+                lesson:
+                  $ref: '#/components/schemas/LessonInput'
+      responses:
+        '201':
+          description: Lesson created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+        '403':
+          description: Forbidden (admin only)
+
+  /v1/lessons/{id}:
+    get:
+      tags:
+        - Lessons
+      summary: Get lesson details
+      description: Returns detailed information about a specific lesson
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lesson details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+    patch:
+      tags:
+        - Lessons
+      summary: Update lesson
+      description: Updates a lesson (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lesson:
+                  $ref: '#/components/schemas/LessonInput'
+      responses:
+        '200':
+          description: Lesson updated
+        '403':
+          description: Forbidden (admin only)
+    delete:
+      tags:
+        - Lessons
+      summary: Delete lesson
+      description: Deletes a lesson (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Lesson deleted
+        '403':
+          description: Forbidden (admin only)
+
+  /v1/users/{id}/courses:
+    get:
+      tags:
+        - Users
+      summary: Get user courses
+      description: Returns courses enrolled by a user (self or admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of enrollments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EnrollmentData'
+        '403':
+          description: Forbidden
+
+  /v1/users/{id}/session_analyses:
+    get:
+      tags:
+        - SessionAnalyses
+      summary: Get user session analyses
+      description: Returns session analyses for a user (self or admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lesson_id
+          in: query
+          schema:
+            type: integer
+          description: Filter by lesson ID
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by start date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by end date
+      responses:
+        '200':
+          description: List of session analyses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SessionAnalysisData'
+
+  /v1/lessons/{lesson_id}/session_analyses:
+    post:
+      tags:
+        - SessionAnalyses
+      summary: Create session analysis
+      description: Creates a new session analysis record
+      parameters:
+        - name: lesson_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_analysis
+              properties:
+                session_analysis:
+                  $ref: '#/components/schemas/SessionAnalysisInput'
+      responses:
+        '201':
+          description: Session analysis created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionAnalysisResponse'
+    get:
+      tags:
+        - SessionAnalyses
+      summary: Get lesson session analyses
+      description: Returns session analyses for a lesson (admin only)
+      parameters:
+        - name: lesson_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of session analyses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SessionAnalysisData'
+        '403':
+          description: Forbidden (admin only)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token authentication
+
+  schemas:
+    UserData:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          example: user
+        attributes:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [student, admin]
+        avatar_url:
+          type: string
+          nullable: true
+
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserData'
+        token:
+          type: string
+          description: JWT authentication token
+
+    CourseInput:
+      type: object
+      required:
+        - title
+        - language_code
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        language_code:
+          type: string
+        level:
+          type: string
+          enum: [A1, A2, B1, B2, C1, C2]
+        description:
+          type: string
+        is_published:
+          type: boolean
+
+    CourseData:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          example: course
+        attributes:
+          $ref: '#/components/schemas/Course'
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        language_code:
+          type: string
+        level:
+          type: string
+        description:
+          type: string
+        is_published:
+          type: boolean
+        lessons_count:
+          type: integer
+          description: Number of lessons (included in detail view)
+
+    CourseResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CourseData'
+
+    CourseListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseData'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    LessonInput:
+      type: object
+      required:
+        - title
+        - order_index
+      properties:
+        title:
+          type: string
+        order_index:
+          type: integer
+          minimum: 1
+        description:
+          type: string
+        video_url:
+          type: string
+          format: uri
+        expected_duration_minutes:
+          type: integer
+
+    LessonData:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          example: lesson
+        attributes:
+          $ref: '#/components/schemas/Lesson'
+
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        order_index:
+          type: integer
+        description:
+          type: string
+        video_url:
+          type: string
+        expected_duration_minutes:
+          type: integer
+
+    LessonResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LessonData'
+
+    EnrollmentData:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          example: enrollment
+        attributes:
+          $ref: '#/components/schemas/Enrollment'
+
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [active, completed, dropped]
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    EnrollmentResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EnrollmentData'
+
+    SessionAnalysisInput:
+      type: object
+      properties:
+        overall_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        fluency_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        grammar_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        pronunciation_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        feedback_text:
+          type: string
+        recorded_video_url:
+          type: string
+          format: uri
+        raw_transcript:
+          type: string
+        session_started_at:
+          type: string
+          format: date-time
+        session_ended_at:
+          type: string
+          format: date-time
+
+    SessionAnalysisData:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          example: session_analysis
+        attributes:
+          $ref: '#/components/schemas/SessionAnalysis'
+
+    SessionAnalysis:
+      type: object
+      properties:
+        id:
+          type: integer
+        overall_score:
+          type: integer
+        fluency_score:
+          type: integer
+        grammar_score:
+          type: integer
+        pronunciation_score:
+          type: integer
+        feedback_text:
+          type: string
+        recorded_video_url:
+          type: string
+        raw_transcript:
+          type: string
+        session_started_at:
+          type: string
+          format: date-time
+        session_ended_at:
+          type: string
+          format: date-time
+
+    SessionAnalysisResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SessionAnalysisData'
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: validation_error
+            message:
+              type: string
+              example: Given data is invalid
+            details:
+              type: object
+              additionalProperties: true
+

@@ -1,0 +1,947 @@
+{
+	"id": "2caf6e31-a5d0-40b8-aa02-a7d84e7f38f6",
+	"name": "Soulingo Backend API",
+	"timestamp": "2025-11-19T12:02:15.061Z",
+	"collection_id": "45402436-571c4f0f-9873-427e-a1dd-2fe3ad48ae86",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 74,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-11-19T12:02:04.848Z",
+	"totalFail": 1,
+	"results": [
+		{
+			"id": "a90a0f48-1a3d-4111-bbb5-aab26f1e3daf",
+			"name": "Register",
+			"url": "http://localhost:3000/v1/auth/register",
+			"time": 1963,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201 Created": true,
+				"Response has valid token": true,
+				"Response has complete user data": true,
+				"User role is valid": true,
+				"Email format is valid": true,
+				"Response does not contain password": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid token": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete user data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User role is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Email format is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response does not contain password": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1963
+			],
+			"allTests": [
+				{
+					"Status code is 201 Created": true,
+					"Response has valid token": true,
+					"Response has complete user data": true,
+					"User role is valid": true,
+					"Email format is valid": true,
+					"Response does not contain password": true
+				}
+			]
+		},
+		{
+			"id": "ebf7efae-82fb-458f-8a52-2e8a1dd02155",
+			"name": "Login",
+			"url": "http://localhost:3000/v1/auth/login",
+			"time": 427,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has valid token": true,
+				"Response has complete user data": true,
+				"User role is valid": true,
+				"Response does not contain password": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid token": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete user data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User role is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response does not contain password": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				427
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has valid token": true,
+					"Response has complete user data": true,
+					"User role is valid": true,
+					"Response does not contain password": true
+				}
+			]
+		},
+		{
+			"id": "e4a7f7ed-ed06-40d3-aec2-fbc4ebad34d9",
+			"name": "Get Current User",
+			"url": "http://localhost:3000/v1/auth/me",
+			"time": 183,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has complete user data": true,
+				"User role is valid": true,
+				"Email format is valid": true,
+				"Response does not contain password": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete user data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User role is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Email format is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response does not contain password": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				183
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has complete user data": true,
+					"User role is valid": true,
+					"Email format is valid": true,
+					"Response does not contain password": true
+				}
+			]
+		},
+		{
+			"id": "0916a477-9453-4ceb-b00b-66ef2bcaebd0",
+			"name": "List Courses",
+			"url": "http://localhost:3000/v1/courses?page=1&per_page=20",
+			"time": 1315,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has data array": true,
+				"Response has complete pagination metadata": true,
+				"Course items have correct structure": true,
+				"Course level is valid if present": true,
+				"is_published is boolean": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has data array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete pagination metadata": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Course items have correct structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Course level is valid if present": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is_published is boolean": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1315
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has data array": true,
+					"Response has complete pagination metadata": true,
+					"Course items have correct structure": true,
+					"Course level is valid if present": true,
+					"is_published is boolean": true
+				}
+			]
+		},
+		{
+			"id": "eea4a178-b001-422e-96bc-da3902e6b285",
+			"name": "Get Course",
+			"url": "http://localhost:3000/v1/courses/10",
+			"time": 253,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has complete course data": true,
+				"Course level is valid": true,
+				"Data types are correct": true,
+				"Title length is within limit": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete course data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Course level is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data types are correct": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Title length is within limit": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				253
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has complete course data": true,
+					"Course level is valid": true,
+					"Data types are correct": true,
+					"Title length is within limit": true
+				}
+			]
+		},
+		{
+			"id": "23931f63-774f-4527-8451-1bbc83121332",
+			"name": "Create Course",
+			"url": "http://localhost:3000/v1/courses",
+			"time": 211,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201 Created": true,
+				"Response has complete course data": true,
+				"Course level is valid": true,
+				"Data types are correct": true,
+				"Title length is within limit": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete course data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Course level is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data types are correct": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Title length is within limit": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				211
+			],
+			"allTests": [
+				{
+					"Status code is 201 Created": true,
+					"Response has complete course data": true,
+					"Course level is valid": true,
+					"Data types are correct": true,
+					"Title length is within limit": true
+				}
+			]
+		},
+		{
+			"id": "90c8a85f-aec8-4460-8743-bc90a39183a6",
+			"name": "Update Course",
+			"url": "http://localhost:3000/v1/courses/19",
+			"time": 268,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has complete updated course data": true,
+				"Course level is valid": true,
+				"Data types are correct": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete updated course data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Course level is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data types are correct": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				268
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has complete updated course data": true,
+					"Course level is valid": true,
+					"Data types are correct": true
+				}
+			]
+		},
+		{
+			"id": "db323e44-3ceb-44a0-8789-921efd9945f4",
+			"name": "List Course Lessons",
+			"url": "http://localhost:3000/v1/courses/19/lessons",
+			"time": 217,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has data array": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has data array": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				217
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has data array": true
+				}
+			]
+		},
+		{
+			"id": "03c5e0ad-a58a-40e0-8c6e-dafb14410eb8",
+			"name": "Get Lesson",
+			"url": "http://localhost:3000/v1/lessons/",
+			"time": 202,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status code is 200 OK": false
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				202
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": false
+				}
+			]
+		},
+		{
+			"id": "9b5c7de3-ec21-4468-9349-8217b75e25d9",
+			"name": "Create Lesson",
+			"url": "http://localhost:3000/v1/courses/19/lessons",
+			"time": 248,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201 Created": true,
+				"Response has complete lesson data": true,
+				"order_index is valid": true,
+				"Data types are correct": true,
+				"Video URL format is valid if present": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete lesson data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"order_index is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Data types are correct": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Video URL format is valid if present": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				248
+			],
+			"allTests": [
+				{
+					"Status code is 201 Created": true,
+					"Response has complete lesson data": true,
+					"order_index is valid": true,
+					"Data types are correct": true,
+					"Video URL format is valid if present": true
+				}
+			]
+		},
+		{
+			"id": "47f1f8d1-c625-4078-a10e-268fb5b98666",
+			"name": "Update Lesson",
+			"url": "http://localhost:3000/v1/lessons/43",
+			"time": 243,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has complete updated lesson data": true,
+				"order_index is valid": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete updated lesson data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"order_index is valid": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				243
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has complete updated lesson data": true,
+					"order_index is valid": true
+				}
+			]
+		},
+		{
+			"id": "b0012b3d-7aa3-43c8-b533-9d66b0fc0ff4",
+			"name": "Enroll in Course",
+			"url": "http://localhost:3000/v1/courses/19/enroll",
+			"time": 271,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201 Created": true,
+				"Response has complete enrollment data": true,
+				"Enrollment status is valid": true,
+				"Progress percent is valid": true,
+				"started_at is valid ISO 8601 date": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete enrollment data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Enrollment status is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Progress percent is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"started_at is valid ISO 8601 date": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				271
+			],
+			"allTests": [
+				{
+					"Status code is 201 Created": true,
+					"Response has complete enrollment data": true,
+					"Enrollment status is valid": true,
+					"Progress percent is valid": true,
+					"started_at is valid ISO 8601 date": true
+				}
+			]
+		},
+		{
+			"id": "5dcc2f71-29f3-4e9e-a0d6-b42793887b45",
+			"name": "Get User Courses",
+			"url": "http://localhost:3000/v1/users/8/courses",
+			"time": 219,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has data array": true,
+				"Enrollment items have correct structure": true,
+				"Enrollment status is valid": true,
+				"Progress percent is valid": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has data array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Enrollment items have correct structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Enrollment status is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Progress percent is valid": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				219
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has data array": true,
+					"Enrollment items have correct structure": true,
+					"Enrollment status is valid": true,
+					"Progress percent is valid": true
+				}
+			]
+		},
+		{
+			"id": "6eabb29b-424a-47d9-a8cb-16a2c6f2eb23",
+			"name": "Get Course Students",
+			"url": "http://localhost:3000/v1/courses/19/students",
+			"time": 195,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has data array": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has data array": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				195
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has data array": true
+				}
+			]
+		},
+		{
+			"id": "d212b92c-cd27-4b99-80e7-85b5a7951e2d",
+			"name": "Create Session Analysis",
+			"url": "http://localhost:3000/v1/lessons/43/session_analyses",
+			"time": 1260,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201 Created": true,
+				"Response has complete session analysis data": true,
+				"Scores are valid if present": true,
+				"Video URL format is valid if present": true,
+				"Timestamps are valid ISO 8601 dates if present": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has complete session analysis data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Scores are valid if present": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Video URL format is valid if present": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Timestamps are valid ISO 8601 dates if present": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1260
+			],
+			"allTests": [
+				{
+					"Status code is 201 Created": true,
+					"Response has complete session analysis data": true,
+					"Scores are valid if present": true,
+					"Video URL format is valid if present": true,
+					"Timestamps are valid ISO 8601 dates if present": true
+				}
+			]
+		},
+		{
+			"id": "3d0b4ef1-b1e6-451f-8500-bdd25b5fb193",
+			"name": "Get User Session Analyses",
+			"url": "http://localhost:3000/v1/users/8/session_analyses",
+			"time": 212,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response has data array": true,
+				"Session analysis items have correct structure": true,
+				"Scores are valid if present": true
+			},
+			"testPassFailCounts": {
+				"Response has data array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Session analysis items have correct structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Scores are valid if present": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				212
+			],
+			"allTests": [
+				{
+					"Response has data array": true,
+					"Session analysis items have correct structure": true,
+					"Scores are valid if present": true
+				}
+			]
+		},
+		{
+			"id": "b3b27ceb-b6b6-48f6-a52b-a7701c9d0404",
+			"name": "Get Lesson Session Analyses",
+			"url": "http://localhost:3000/v1/lessons/43/session_analyses",
+			"time": 203,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200 OK": true,
+				"Response has data array": true,
+				"Session analysis items have correct structure": true,
+				"Scores are valid if present": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has data array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Session analysis items have correct structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Scores are valid if present": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				203
+			],
+			"allTests": [
+				{
+					"Status code is 200 OK": true,
+					"Response has data array": true,
+					"Session analysis items have correct structure": true,
+					"Scores are valid if present": true
+				}
+			]
+		},
+		{
+			"id": "b05e49b6-6167-4540-ae30-c3e404621e80",
+			"name": "Delete Lesson",
+			"url": "http://localhost:3000/v1/lessons/43",
+			"time": 246,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status code is 204 No Content": true,
+				"Response body is empty": true
+			},
+			"testPassFailCounts": {
+				"Status code is 204 No Content": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response body is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				246
+			],
+			"allTests": [
+				{
+					"Status code is 204 No Content": true,
+					"Response body is empty": true
+				}
+			]
+		},
+		{
+			"id": "f4d24f80-54fe-4af9-9d8b-23a7525ff175",
+			"name": "Delete Course",
+			"url": "http://localhost:3000/v1/courses/19",
+			"time": 222,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status code is 204 No Content": true,
+				"Response body is empty": true
+			},
+			"testPassFailCounts": {
+				"Status code is 204 No Content": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response body is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				222
+			],
+			"allTests": [
+				{
+					"Status code is 204 No Content": true,
+					"Response body is empty": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 8358,
+	"collection": {
+		"requests": [
+			{
+				"id": "a90a0f48-1a3d-4111-bbb5-aab26f1e3daf",
+				"method": "POST"
+			},
+			{
+				"id": "ebf7efae-82fb-458f-8a52-2e8a1dd02155",
+				"method": "POST"
+			},
+			{
+				"id": "e4a7f7ed-ed06-40d3-aec2-fbc4ebad34d9",
+				"method": "GET"
+			},
+			{
+				"id": "0916a477-9453-4ceb-b00b-66ef2bcaebd0",
+				"method": "GET"
+			},
+			{
+				"id": "eea4a178-b001-422e-96bc-da3902e6b285",
+				"method": "GET"
+			},
+			{
+				"id": "23931f63-774f-4527-8451-1bbc83121332",
+				"method": "POST"
+			},
+			{
+				"id": "90c8a85f-aec8-4460-8743-bc90a39183a6",
+				"method": "PATCH"
+			},
+			{
+				"id": "db323e44-3ceb-44a0-8789-921efd9945f4",
+				"method": "GET"
+			},
+			{
+				"id": "03c5e0ad-a58a-40e0-8c6e-dafb14410eb8",
+				"method": "GET"
+			},
+			{
+				"id": "9b5c7de3-ec21-4468-9349-8217b75e25d9",
+				"method": "POST"
+			},
+			{
+				"id": "47f1f8d1-c625-4078-a10e-268fb5b98666",
+				"method": "PATCH"
+			},
+			{
+				"id": "b0012b3d-7aa3-43c8-b533-9d66b0fc0ff4",
+				"method": "POST"
+			},
+			{
+				"id": "5dcc2f71-29f3-4e9e-a0d6-b42793887b45",
+				"method": "GET"
+			},
+			{
+				"id": "6eabb29b-424a-47d9-a8cb-16a2c6f2eb23",
+				"method": "GET"
+			},
+			{
+				"id": "d212b92c-cd27-4b99-80e7-85b5a7951e2d",
+				"method": "POST"
+			},
+			{
+				"id": "3d0b4ef1-b1e6-451f-8500-bdd25b5fb193",
+				"method": "GET"
+			},
+			{
+				"id": "b3b27ceb-b6b6-48f6-a52b-a7701c9d0404",
+				"method": "GET"
+			},
+			{
+				"id": "b05e49b6-6167-4540-ae30-c3e404621e80",
+				"method": "DELETE"
+			},
+			{
+				"id": "f4d24f80-54fe-4af9-9d8b-23a7525ff175",
+				"method": "DELETE"
+			}
+		]
+	}
+}
